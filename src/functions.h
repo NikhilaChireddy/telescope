@@ -25,6 +25,7 @@ Winter's Tale, Act 3, Scene 1. William Shakespeare
 
 #include "definitions.h"
 #include "queuelib.h"
+#include "brokerMap.h"
 
 HashTable HT; /* Loop-detection hash table cache */
 HashEntry heItem; /* hash table entry item */
@@ -1800,11 +1801,19 @@ int establishPeerConnection(void)
     int v = 1;
     //build address data structure
 peer_sin.sin_family = AF_INET;
+peer_sin.sin_addr.s_addr = "129.82.44.145";
 /* convert port number to network byte order */ 
-if (port != 0)
+if (port != 0){
 peer_sin.sin_port = htons(port);
-	else
+printf("in if port = %d",port);
+}	else{
 peer_sin.sin_port = htons(SERVER_PORT);
+printf("in else");
+}
+
+printf("port = %d, ipaddress = %s",peer_sin.sin_port,peer_sin.sin_addr.s_addr);
+//inet_aton("129.82.44.144", &peer_sin.sin_addr.s_addr);
+//printf("port = %d, ipaddress = %s",peer_sin.sin_port,peer_sin.sin_addr.s_addr);
 /* convert IP address in ASCII strings to network byte order binary value */ 
 inet_pton(AF_INET, ipptr, &peer_sin.sin_addr.s_addr);
 
@@ -2857,7 +2866,7 @@ if ((result = recv(sock, tmp, sizeof(buffer), 0)) > 2)
         strncpy (buffer, tmp, result-2);
 else continue;
 
-if (strcmp(DEFAULT_ACCESS_PASSWORD, buffer) == 0)
+if (strcmp(DEFAULT_ACCESS_PASSWORD, buffer) == 0 || search_pwd(buffer) == 1)
 {
     for (; ;) {
         
@@ -2874,7 +2883,7 @@ if (strcmp(buffer, EXIT_STRING) == 0 || strcmp(buffer, EXIT_STR) == 0 || strcmp(
 else if (strcmp(buffer, HELP_STR) == 0 || strcmp(buffer, "h") == 0)
         {
         write(sock, (char *) "available commands are :\n", strlen((char *)"available commands are :\n"));
-        write(sock, (char *) "help (h); exit (q); show transaction (st); change transaction (ct); reset transaction (rt); shutdown (sd)\n", strlen((char *)"help (h); exit (q); show transaction (st); change transaction (ct); reset transaction (rt); shutdown (sd)\n"));
+        write(sock, (char *) "help (h); exit (q); show transaction (st); change transaction (ct); reset transaction (rt); shutdown (sd)\n; add_broker ; remove_broker ; update_priority ; show_map ; show_uptime ; show_fault_history ; show_current_broker ; change_password\n", strlen((char *)"help (h); exit (q); show transaction (st); change transaction (ct); reset transaction (rt); shutdown (sd)\n; add_broker ; remove_broker ; update_priority ; show_map ; show_uptime ; show_fault_history ; show_current_broker ; change_password\n"));
         }        
 else if (strcmp(buffer, SHUTDWN_STR) == 0 || strcmp(buffer, "sd") == 0)
         //terminate_(0);
@@ -2898,6 +2907,42 @@ else if (strcmp(buffer, TRANSACTION_STR) == 0 || strcmp(buffer, "ct") == 0)
              else ReInitializeParseEngine(eflag, exp);
              }
         }
+else if (strcmp(buffer, "create_table") == 0)
+        {
+         create_table();
+        }        
+else if (strcmp(buffer, "add_broker") == 0)
+        {
+         add_broker();
+        }        
+else if (strcmp(buffer, "remove_broker") == 0)
+        {
+        	remove_broker();
+        }        
+else if (strcmp(buffer, "update_priority") == 0)
+        {
+        	update_priority();
+        }
+else if (strcmp(buffer, "show_map") == 0)
+        {
+        	show_map();
+        }     
+else if (strcmp(buffer, "show_current_broker") == 0)
+        {
+        	show_current_broker();
+        }
+else if (strcmp(buffer, "show_fault_history") == 0)
+        {
+        	show_fault_history();
+        }
+else if (strcmp(buffer, "show_uptime") == 0)
+        {
+        	show_uptime();
+        }
+else if (strcmp(buffer, "change_password") == 0)
+        {
+        	change_password();
+        }                   
 else {
      write(sock, (char *) "unknown command. type h for help\n", strlen((char *)"unknown command. type h for help\n"));
      }    
