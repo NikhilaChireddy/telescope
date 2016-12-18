@@ -1,8 +1,7 @@
 EXEC      = telescope 
 CC = gcc
 CFLAGS = -Wall -fno-strict-aliasing -g -I/usr/include/libxml2  -DHAVE_CONFIG_H
-LDFLAGS = -lxml2 -lpthread -lm -lz
-
+LDFLAGS = -lxml2 -lpthread -lm -lz -lsqlite3 -lssl -lcrypto
 
 AR = @AR@
 ARFLAGS = @ARFLAGS@
@@ -43,7 +42,7 @@ $(EXEC): $(OBJECTS1)
 	$(CC) $(CFLAGS) $(OBJECTS1) $(LDFLAGS) -o $(MAINEXEC)
 
 $(OBJECTDIR)/telescope.o: $(SRCDIR)/telescope.c
-	$(CC) $(CFLAGS) -c $(SRCDIR)/telescope.c -o $(OBJECTDIR)/telescope.o
+	$(CC) $(CFLAGS) -c $(SRCDIR)/telescope.c -o $(OBJECTDIR)/telescope.o 
 
 
 clean:
@@ -58,7 +57,6 @@ build-tests: .build-tests-post
 
 .build-tests-post: .build-tests-impl
 # Add your post 'build-tests' code here...
-
 
 # run tests
 test: .test-post
